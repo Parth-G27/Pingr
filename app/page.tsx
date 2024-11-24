@@ -1,10 +1,15 @@
 // import Image from "next/image";
+import { currentUser } from "@clerk/nextjs/server";
 
-export default function Home() {
+export default async function Home() {
+  const user = await currentUser();
+  if(!user) {
+    return <div>No user found</div>
+  }
   return (
-    <div className='flex min-h-screen w-full flex-col items-center p-8 pb-20 gap-16 sm:p-20 dark:bg-black'>
+    <div className='flex min-h-screen w-full flex-col items-center justify-center p-8 pb-20 gap-16 sm:p-20 dark:bg-black'>
       
-      <h3>page</h3>
+      <h3>Welcome, {user?.firstName} </h3>
     </div>
   );
 }
