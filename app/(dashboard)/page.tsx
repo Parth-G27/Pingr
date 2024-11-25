@@ -1,4 +1,4 @@
-// import { wait } from "@/lib/wait";
+import { wait } from "@/lib/wait";
 import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 
@@ -14,7 +14,7 @@ export default async function Home() {
 
 async function WelcomeMessage() {
   const user = await currentUser();
-  // await wait(3000);
+  await wait(3000);
   if (!user) {
     return <div>No user found</div>;
   }
@@ -34,7 +34,7 @@ async function WelcomeMessage() {
 
 function WelcomeMessageFallback() {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center p-8 pb-20 gap-16 sm:p-20 dark:bg-black">
+    <div className="flex min-h-screen w-full flex-col items-start p-4 pb-20 gap-16 sm:p-20 dark:bg-black">
       <div>Loading...</div>
     </div>
   );
