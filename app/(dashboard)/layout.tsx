@@ -2,11 +2,10 @@ import React, { ReactNode } from "react";
 
 function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center">
-      <div className=" flex-grow w-full justify-center dark:bg-neutral-950" >
-        <div className=" max-w-[920px] flex flex-col flex-grow px-4 py-12">
-          {children}
-        </div>
+    <div className="flex min-h-screen w-full flex-col items-center dark:bg-neutral-950">
+      {/* Wrapper for content with responsive width */}
+      <div className="flex-grow w-full max-w-[90%] sm:max-w-[1080px] px-4 py-8 justify-center pt-[40px]">
+        {children}
       </div>
     </div>
   );
