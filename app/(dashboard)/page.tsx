@@ -1,13 +1,22 @@
 import { wait } from "@/lib/wait";
 import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import NoCollectionIcon from "@/components/icons/noCollectionIcon";
+import prisma from "../../lib/prisma";
 
 export default async function Home() {
   return (
     <>
-      <Suspense fallback={<WelcomeMessageFallback />}>
-        <WelcomeMessage />
-      </Suspense>
+      <div className="flex min-h-screen w-full flex-col items-center p-2 pb-10 gap-16 sm:p-8 dark:bg-neutral-950">
+        <Suspense fallback={<WelcomeMessageFallback />}>
+          <WelcomeMessage />
+        </Suspense>
+        <Suspense fallback={<div> Loading Collections...</div>}>
+          <Collection />
+        </Suspense>
+      </div>
     </>
   );
 }
@@ -20,22 +29,47 @@ async function WelcomeMessage() {
   }
   return (
     <>
-      <div className="flex min-h-screen w-full flex-col items-center p-2 pb-10 gap-16 sm:p-8 dark:bg-neutral-950">
-        <h3 className="flex flex-col sm:flex-row items-start text-3xl sm:text-5xl font-bold bg-gradient-to-r from-red-600 via-red-800 to-red-600 dark:from-red-800 dark:via-red-600 dark:to-red-800 bg-clip-text text-transparent px-1 w-full">
-          <span>Welcome,</span>
-          <span className="text-4xl sm:text-5xl bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 dark:from-orange-600 dark:via-red-600 dark:to-orange-600 bg-clip-text text-transparent sm:ml-3">
-            {user?.firstName} {user?.lastName}
-          </span>
-        </h3>
-      </div>
+      <h3 className="flex flex-col sm:flex-row items-start text-3xl sm:text-5xl font-bold bg-gradient-to-r from-red-600 via-red-800 to-red-600 dark:from-red-800 dark:via-red-600 dark:to-red-800 bg-clip-text text-transparent px-1 w-full">
+        <span>Welcome,</span>
+        <span className="text-4xl sm:text-5xl bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 dark:from-orange-600 dark:via-red-600 dark:to-orange-600 bg-clip-text text-transparent sm:ml-3">
+          {user?.firstName} {user?.lastName}
+        </span>
+      </h3>
     </>
   );
 }
 
 function WelcomeMessageFallback() {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center p-4 pb-20 gap-16 sm:p-20 dark:bg-black">
-      <div>Loading...</div>
+    <div className="flex min-h-screen w-full flex-col">
+      <Skeleton className="w-[75%] h-[30px] sm:w-[70%] sm:h-[48px] rounded-md my-2" />
+      <Skeleton className="w-[75%] h-[30px] sm:w-[70%] sm:h-[48px] rounded-md my-2" />
     </div>
   );
+}
+
+async function Collection() {
+  await wait(3000);
+  const user = await currentUser();
+  const collections = await prisma.collection.findMany({
+    where: {
+      userID: user?.id,
+    },
+  });
+  if (collections.length === 0) {
+    return (
+      <>
+        <div className="relative z-10 w-11/12 sm:w-2/3">
+          <Alert className="">
+            <NoCollectionIcon />
+            <AlertTitle>There are no collections yet !</AlertTitle>
+            <AlertDescription>
+              Create a collection to get started
+            </AlertDescription>
+          </Alert>
+        </div>
+      </>
+    );
+  }
+  return <></>;
 }
