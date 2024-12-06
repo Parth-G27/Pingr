@@ -20,7 +20,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Pingr App",
-  description: "Your goto reminder app ❤️",
+  description: "Your goto to-do app ❤️",
 };
 
 export default function RootLayout({
