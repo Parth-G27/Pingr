@@ -1,10 +1,12 @@
 import { wait } from "@/lib/wait";
 import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import NoCollectionIcon from "@/components/icons/noCollectionIcon";
 import prisma from "../../lib/prisma";
+import LoadingCollections from "@/components/LoadingCollections";
+import { WelcomeMessageFallback } from "../../components/WelcomeMessageFallback";
+import AddCollectionButton from "../../components/AddCollectionButton";
 
 export default async function Home() {
   return (
@@ -13,7 +15,9 @@ export default async function Home() {
         <Suspense fallback={<WelcomeMessageFallback />}>
           <WelcomeMessage />
         </Suspense>
-        <Suspense fallback={<div> Loading Collections...</div>}>
+        
+
+        <Suspense fallback={<LoadingCollections />}>
           <Collection />
         </Suspense>
       </div>
@@ -39,17 +43,8 @@ async function WelcomeMessage() {
   );
 }
 
-function WelcomeMessageFallback() {
-  return (
-    <div className="flex min-h-screen w-full flex-col">
-      <Skeleton className="w-[75%] h-[30px] sm:w-[70%] sm:h-[48px] rounded-md my-2" />
-      <Skeleton className="w-[75%] h-[30px] sm:w-[70%] sm:h-[48px] rounded-md my-2" />
-    </div>
-  );
-}
-
 async function Collection() {
-  await wait(3000);
+  await wait(4000);
   const user = await currentUser();
   const collections = await prisma.collection.findMany({
     where: {
@@ -59,7 +54,7 @@ async function Collection() {
   if (collections.length === 0) {
     return (
       <>
-        <div className="relative z-10 w-11/12 sm:w-2/3">
+        <div className=" flex flex-col gap-5 relative z-10 w-11/12 sm:w-2/3">
           <Alert className="">
             <NoCollectionIcon />
             <AlertTitle>There are no collections yet !</AlertTitle>
@@ -67,6 +62,7 @@ async function Collection() {
               Create a collection to get started
             </AlertDescription>
           </Alert>
+          <AddCollectionButton/> 
         </div>
       </>
     );
