@@ -67,5 +67,7 @@ async function Collection() {
       </>
     );
   }
-  return <></>;
+  return <>
+  <AddCollectionButton/> 
+  </>;
 }

@@ -32,6 +32,7 @@ import { CollectionColor, CollectionColors } from "../lib/colorConstants";
 import { cn } from "../lib/utils";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
+import { createCollection } from "../actions/collection";
 
 interface Props {
   keepCount: number;
@@ -50,8 +51,13 @@ function CreateCollectionSheet({ open, onOpenChange }: Props) {
       });
       
 
-  const onSubmit = (data: createCollectionSchemaType) => {
-    console.log("SUBMITTED", data);
+  const onSubmit = async(data: createCollectionSchemaType) => {
+    try {
+      await createCollection(data);
+      //console.log("onSubmit data",data);
+    } catch (error) {
+      console.log("error at onSubmit",error);
+    }
   };
 
   const openChangeWrapper = (open:boolean) => {
