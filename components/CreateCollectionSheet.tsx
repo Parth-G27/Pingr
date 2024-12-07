@@ -32,6 +32,10 @@ import { CollectionColor, CollectionColors } from "../lib/colorConstants";
 import { cn } from "../lib/utils";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
+// import { toast } from "./ui";
+import { createCollection } from "../actions/collection";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useToast } from "@/hooks/use-toast"
 
 interface Props {
   keepCount: number;
@@ -41,23 +45,44 @@ interface Props {
 }
 
 function CreateCollectionSheet({ open, onOpenChange }: Props) {
-    const form = useForm<createCollectionSchemaType>({
-        resolver: zodResolver(createCollectionSchema),
-        defaultValues: {
-          name: "", 
-          color: "", 
-        },
+  const { toast } = useToast();
+
+  const form = useForm<createCollectionSchemaType>({
+    resolver: zodResolver(createCollectionSchema),
+    defaultValues: {
+      name: "",
+      color: "",
+    },
+  });
+
+  const onSubmit = async (data: createCollectionSchemaType) => {
+    try {
+      // 
+      await createCollection(data);
+      // Close the sheet
+      openChangeWrapper(false);
+    
+      // Show toast
+      toast({
+        title: "Success",
+        description: "Collection created successfully!",
       });
       
-
-  const onSubmit = (data: createCollectionSchemaType) => {
-    console.log("SUBMITTED", data);
+    } catch (e) {
+      // Show error toast
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again later.",
+        variant: "destructive",
+      });
+      console.log("Error while creating collection", e);
+    }
   };
 
-  const openChangeWrapper = (open:boolean) => {
+  const openChangeWrapper = (open: boolean) => {
     form.reset();
     onOpenChange(open);
-  }
+  };
   return (
     <Sheet open={open} onOpenChange={openChangeWrapper}>
       <SheetContent>
@@ -69,7 +94,10 @@ function CreateCollectionSheet({ open, onOpenChange }: Props) {
         </SheetHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 flex flex-col"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -130,7 +158,20 @@ function CreateCollectionSheet({ open, onOpenChange }: Props) {
         </Form>
         <div className="flex flex-col gap-3 mt-4">
           <Separator />
-          <Button onClick={form.handleSubmit(onSubmit)}>Confirm</Button>
+          <Button
+            disabled={form.formState.isSubmitting}
+            variant="outline"
+            className={cn(
+              form.watch("color") &&
+                CollectionColors[form.getValues("color") as CollectionColor]
+            )}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            Confirm
+            {form.formState.isSubmitting && (
+              <ReloadIcon className="ml-2 h-4 w-4 animate-spin" />
+            )}
+          </Button>
         </div>
       </SheetContent>
     </Sheet>
