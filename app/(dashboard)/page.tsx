@@ -67,7 +67,16 @@ async function Collection() {
       </>
     );
   }
-  return <>
+  return (<>
+  <div>
+    Collections : {collections.length}
+    <ul>
+        {collections.map((item,index) => (
+          <li key={index}>{item.id}{item.name}</li>
+        ))}
+    </ul>
+     
+  </div>
   <AddCollectionButton/> 
-  </>;
+  </>);
 }
